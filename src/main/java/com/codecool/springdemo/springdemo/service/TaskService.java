@@ -2,6 +2,7 @@ package com.codecool.springdemo.springdemo.service;
 
 import com.codecool.springdemo.springdemo.dto.TaskDto;
 import com.codecool.springdemo.springdemo.mapper.TaskMapper;
+import com.codecool.springdemo.springdemo.model.Task;
 import com.codecool.springdemo.springdemo.repository.TaskRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,10 +16,12 @@ import java.util.stream.Collectors;
 public class TaskService implements TextProvider, TasksActions {
 
     private final TaskRepository taskRepository;
+    private final TaskMapper taskMapper;
 
     @Autowired
-    public TaskService(TaskRepository taskRepository) {
+    public TaskService(TaskRepository taskRepository, TaskMapper taskMapper) {
         this.taskRepository = taskRepository;
+        this.taskMapper = taskMapper;
     }
 
     @Override
@@ -28,17 +31,19 @@ public class TaskService implements TextProvider, TasksActions {
 
     @Override
     public List<TaskDto> getAll() {
-        return taskRepository.getAll().stream().map(TaskMapper::map).collect(Collectors.toList());
+        return taskRepository.getAll().stream().map(taskMapper::map).collect(Collectors.toList());
     }
 
     @Override
     public TaskDto get(Long id) {
-        return null;
+        return taskMapper.map(taskRepository.get(id).orElseThrow());
     }
 
     @Override
     public TaskDto create(TaskDto taskDto) {
-        return null;
+        Task taskToSave = taskMapper.map(taskDto);
+        Task savedTask = taskRepository.save(taskToSave);
+        return taskMapper.map(savedTask);
     }
 
     @Override
