@@ -24,7 +24,7 @@ public class TaskRepository {
     }
 
     public Task save(Task task){
-        Long newId = (long) tasks.size()2
+        Long newId = (long) tasks.size() + 1;
         task.setId(newId);
         tasks.put(newId, task);
         return task;
